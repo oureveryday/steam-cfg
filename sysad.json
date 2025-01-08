@@ -1,5 +1,5 @@
 {
-  "version":"6",
+  "version":"7",
   "notices":["Wellcome To Lucky Game Tools","Just for test"],
   "ads": [
     {
@@ -12,14 +12,14 @@
     {
       "position": "gameTop",
       "imgs":      ["https://cdn2.steamgriddb.com/thumb/2715ec81fe7365fee8ea3b17b9403432.jpg"],
-      "note": "购买飞机|电报|telegram账号(AD-可视为捐赠本软件)",
+      "note": "购买飞机|电报|telegram账号(AD)",
       "targetType": "openUrl",
       "targetUrl": "https://accboytg.accountboy.com/zh-cn-cny/buy-tg"
     },
     {
       "position": "gameTop",
       "imgs":      ["https://cdn2.steamgriddb.com/thumb/101342b37476104c212c5c2c0ed9bf62.jpg"],
-      "note": "购买Steam空白账号(小号)(AD-可视为捐赠本软件)",
+      "note": "购买Steam空白账号(小号)(AD)",
       "targetType": "openUrl",
       "targetUrl": "https://accboytg.accountboy.com/zh-cn-cny/buy-Steam"
     },
