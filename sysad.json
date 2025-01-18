@@ -1,5 +1,5 @@
 {
-  "version":"8",
+  "version":"9",
   "notices":["Wellcome To Lucky Game Tools","Just for test"],
   "ads": [
     {
@@ -28,7 +28,7 @@
       "imgs":      ["https://cdn2.steamgriddb.com/thumb/1974a767627527a2f88ea3f2818676d7.jpg"],
       "note": "Discord(官方DC群)",
       "targetType": "openUrl",
-      "targetUrl": "steam://openurl/https://discord.gg/X4MTpDbcpT"
+      "targetUrl": "https://discord.gg/X4MTpDbcpT"
     },
     {
       "position": "gameTop",
