@@ -1,20 +1,20 @@
 {
-  "version":"9",
+  "version":"10",
   "notices":["Wellcome To Lucky Game Tools","Just for test"],
   "ads": [
     {
       "position": "gameTop",
-      "imgs":      ["https://cdn2.steamgriddb.com/thumb/2715ec81fe7365fee8ea3b17b9403432.jpg"],
-      "note": "购买飞机|电报|telegram账号(AD)",
+      "imgs":      ["https://pic.5tu.cn/uploads/allimg/2410/pic_5tu_big_6746088_832493e23ff1995756417a1eb015e284.jpg"],
+      "note": "廣告位招租",
       "targetType": "openUrl",
-      "targetUrl": "https://accboytg.accountboy.com/zh-cn-cny/buy-tg"
+      "targetUrl": "https://luckygametools.github.io/README_zh.html"
     },
     {
       "position": "gameTop",
-      "imgs":      ["https://cdn2.steamgriddb.com/thumb/101342b37476104c212c5c2c0ed9bf62.jpg"],
-      "note": "购买Steam空白账号(小号)(AD)",
+      "imgs":      ["https://asqmontreal.qc.ca/wp-content/uploads/2021/01/ForRent1-300x149.jpg"],
+      "note": "Advertising space for rent",
       "targetType": "openUrl",
-      "targetUrl": "https://accboytg.accountboy.com/zh-cn-cny/buy-Steam"
+      "targetUrl": "https://luckygametools.github.io/README_en.html"
     },
     {
       "position": "gameTop",
@@ -32,10 +32,10 @@
     },
     {
       "position": "gameTop",
-      "imgs":      ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2358720/header_schinese.jpg?t=1725007201"],
-      "note": "Black Myth: Wukong",
+      "imgs":      ["https://cdn2.steamgriddb.com/thumb/2715ec81fe7365fee8ea3b17b9403432.jpg"],
+      "note": "购买飞机|电报|telegram账号(AD)",
       "targetType": "openUrl",
-      "targetUrl": "steam://openurl/https://store.steampowered.com/app/2358720/"
+      "targetUrl": "https://accboytg.accountboy.com/zh-cn-cny/buy-tg"
     }
   ]
 }
