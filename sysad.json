@@ -1,5 +1,5 @@
 {
-  "version":"10",
+  "version":"11",
   "notices":["Wellcome To Lucky Game Tools","Just for test"],
   "ads": [
     {
@@ -29,13 +29,6 @@
       "note": "Discord(官方DC群)",
       "targetType": "openUrl",
       "targetUrl": "https://discord.gg/X4MTpDbcpT"
-    },
-    {
-      "position": "gameTop",
-      "imgs":      ["https://cdn2.steamgriddb.com/thumb/2715ec81fe7365fee8ea3b17b9403432.jpg"],
-      "note": "购买飞机|电报|telegram账号(AD)",
-      "targetType": "openUrl",
-      "targetUrl": "https://accboytg.accountboy.com/zh-cn-cny/buy-tg"
     }
   ]
 }
