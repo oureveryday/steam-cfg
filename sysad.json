@@ -1,5 +1,5 @@
 {
-  "version":"11",
+  "version":"12",
   "notices":["Wellcome To Lucky Game Tools","Just for test"],
   "ads": [
     {
@@ -11,10 +11,10 @@
     },
     {
       "position": "gameTop",
-      "imgs":      ["https://asqmontreal.qc.ca/wp-content/uploads/2021/01/ForRent1-300x149.jpg"],
-      "note": "Advertising space for rent",
+      "imgs":      ["https://i.ibb.co/35s9gBgH/mmexport1743410574127.jpg"],
+      "note": "一個賣掛的小廣告，有需要的請自行購買",
       "targetType": "openUrl",
-      "targetUrl": "https://luckygametools.github.io/README_en.html"
+      "targetUrl": "https://link3.cc/lzlove"
     },
     {
       "position": "gameTop",
@@ -29,6 +29,13 @@
       "note": "Discord(官方DC群)",
       "targetType": "openUrl",
       "targetUrl": "https://discord.gg/X4MTpDbcpT"
+    },
+    {
+      "position": "gameTop",
+      "imgs":      ["https://asqmontreal.qc.ca/wp-content/uploads/2021/01/ForRent1-300x149.jpg"],
+      "note": "Advertising space for rent",
+      "targetType": "openUrl",
+      "targetUrl": "https://luckygametools.github.io/README_en.html"
     }
   ]
 }
