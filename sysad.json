@@ -1,5 +1,5 @@
 {
-  "version":"12",
+  "version":"13",
   "notices":["Wellcome To Lucky Game Tools","Just for test"],
   "ads": [
     {
@@ -8,13 +8,6 @@
       "note": "廣告位招租",
       "targetType": "openUrl",
       "targetUrl": "https://luckygametools.github.io/README_zh.html"
-    },
-    {
-      "position": "gameTop",
-      "imgs":      ["https://i.ibb.co/35s9gBgH/mmexport1743410574127.jpg"],
-      "note": "一個賣掛的小廣告，有需要的請自行購買",
-      "targetType": "openUrl",
-      "targetUrl": "https://link3.cc/lzlove?from=lgt"
     },
     {
       "position": "gameTop",
