@@ -24,14 +24,3 @@ Link with me: LuckyGameTools@gmail.com    https://t.me/luckygametools
 <h1>此软件为纯本地绿色软件，所有资源来自互联网，可能会出现杀毒误报，请大家放心食用</h1>
 
 官网：https://luckygametools.github.io
-
-
-大家注意一下使用时：
-
-1.luckygametools使用了steam目录下的hid.dll文件，如果与其它入库工具相冲突，需要备份一下hid.dll文件
-
-2.程序打开后提示进行安装，如果一直提示初始化中，应该是由于国内网络原因，重新启动一下程序两次应该可以正常
-
-3.初始使用游戏信息加载不全时，可以试下任务栏的“刷新”
-
-4.如出现一直"等待上线"的提示，可以关闭其它加速器再试(本软件自带steam加速功能,小技巧，右键->以管理员身份运行)
