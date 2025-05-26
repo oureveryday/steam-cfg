@@ -1,0 +1,34 @@
+name: Generate steamdb2 File Update Times
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  generate-file-times:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Generate last-modified times for steamdb2/
+        run: |
+          mkdir -p output
+          find steamdb2 -type f ! -path "./.git/*" ! -name "steamdb2_file_times.json" | while read file; do
+            timestamp=$(git log -1 --format="%cI" -- "$file")
+            echo "{\"file\": \"${file}\", \"last_modified\": \"$timestamp\"}," >> output/times.tmp
+          done
+          echo "[" > output/steamdb2_file_times.json
+          sed '$ s/,$//' output/times.tmp >> output/steamdb2_file_times.json
+          echo "]" >> output/steamdb2_file_times.json
+          rm output/times.tmp
+
+      - name: Commit and push JSON
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/steamdb2_file_times.json
+          git diff --cached --quiet || git commit -m "Update steamdb2_file_times.json"
+          git push
