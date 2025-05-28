@@ -24,26 +24,28 @@ jobs:
             if [ -d "$dir" ]; then
               dir_name=$(basename "$dir")
 
-              # 收集該目錄下所有檔案最後變動的時間，找出最晚的那個
-              latest_ts=""
+              # 找出該子目錄下所有檔案的最新修改時間（commit timestamp）
+              latest_ts=0
               for file in $(find "$dir" -type f); do
-                ts=$(git log -1 --format="%ct" -- "$file" || echo "")
-                if [ -n "$ts" ] && { [ -z "$latest_ts" ] || [ "$ts" -gt "$latest_ts" ]; }; then
+                ts=$(git log -1 --format="%ct" -- "$file" 2>/dev/null || echo 0)
+                if [ "$ts" -gt "$latest_ts" ]; then
                   latest_ts=$ts
                 fi
               done
 
-              # 轉為 ISO 格式（如有）
-              if [ -n "$latest_ts" ]; then
-                iso_ts=$(date -u -d "@$latest_ts" +%Y-%m-%dT%H:%M:%SZ)
-              else
-                iso_ts="null"
+              if [ "$latest_ts" -eq 0 ]; then
+                # 該目錄沒有任何被 Git 跟蹤的檔案，跳過
+                continue
               fi
 
-              # 判斷是否為新增
-              added_commit=$(git log --diff-filter=A --format="%H" -- "$dir" | head -n 1)
+              # 轉為 ISO 格式
+              iso_ts=$(date -u -d "@$latest_ts" +%Y-%m-%dT%H:%M:%SZ)
+
+              # 確認是否是新增的（第一個 commit 是否是新增）
+              first_commit=$(git log --diff-filter=A --format="%H" -- "$dir" | head -n 1)
+              last_commit=$(git log -1 --format="%H" -- "$dir" 2>/dev/null)
               change_type="modified"
-              if [ -n "$added_commit" ]; then
+              if [ "$first_commit" = "$last_commit" ]; then
                 change_type="added"
               fi
 
