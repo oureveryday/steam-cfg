@@ -10,56 +10,58 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repository with full history
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # <== 這行非常關鍵，允許你用 git log 查全部歷史
 
       - name: Generate last-modified times for steamdb2/ first-level directories
         run: |
-          set -eo pipefail
           mkdir -p output
           echo "[" > output/steamdb2_dir_times.json
           first=true
-          
+
           for dir in steamdb2/*; do
             if [ -d "$dir" ]; then
               dir_name=$(basename "$dir")
-          
-              # 找出這個子目錄中所有被 git 管理的檔案
-              tracked_files=$(git ls-files "$dir")
-          
-              if [ -z "$tracked_files" ]; then
-                # 該目錄下沒有任何被 git 跟蹤的檔案，跳過
+
+              # 找出此目錄下的所有 git 管理的檔案
+              files=$(git ls-files "$dir")
+              if [ -z "$files" ]; then
                 continue
               fi
-          
-              # 找出這些檔案中最後一次 commit 的時間（最新的）
-              latest_commit_time=$(git log -1 --format="%ct" -- $tracked_files)
-          
-              # 轉為 ISO 8601 格式
-              iso_ts=$(date -u -d "@$latest_commit_time" +%Y-%m-%dT%H:%M:%SZ)
-          
-              # 判斷是否為新目錄（所有檔案的首次 commit 是否等於最後一次 commit）
-              first_commit=$(git log --diff-filter=A --format="%H" -- $tracked_files | sort | head -n 1)
-              last_commit=$(git log -1 --format="%H" -- $tracked_files)
+
+              # 對所有檔案執行 git log 取最大時間
+              latest_ts=0
+              for f in $files; do
+                ts=$(git log -1 --format="%ct" -- "$f")
+                if [ "$ts" -gt "$latest_ts" ]; then
+                  latest_ts=$ts
+                fi
+              done
+
+              iso_ts=$(date -u -d "@$latest_ts" +%Y-%m-%dT%H:%M:%SZ)
+
+              # 是否為 added？
+              first_commit=$(git log --diff-filter=A --format="%H" -- $files | sort | head -n 1)
+              last_commit=$(git log -1 --format="%H" -- $files)
               if [ "$first_commit" = "$last_commit" ]; then
                 change_type="added"
               else
                 change_type="modified"
               fi
-          
-              # 寫入 JSON 條目
+
               if [ "$first" = true ]; then
                 first=false
               else
                 echo "," >> output/steamdb2_dir_times.json
               fi
-          
+
               echo "{\"directory\": \"${dir_name}\", \"last_modified\": \"${iso_ts}\", \"change_type\": \"${change_type}\"}" >> output/steamdb2_dir_times.json
             fi
           done
-          
-          echo "]" >> output/steamdb2_dir_times.json
 
+          echo "]" >> output/steamdb2_dir_times.json
 
       - name: Commit and push JSON
         run: |
