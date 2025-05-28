@@ -1,4 +1,4 @@
-name: Generate steamdb2 File Update Times
+name: Generate steamdb2 Directory Update Times
 
 on:
   push:
@@ -6,38 +6,48 @@ on:
   workflow_dispatch:
 
 jobs:
-  generate-file-times:
+  generate-dir-times:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Generate last-modified times for steamdb2/ first-level subdirectories
+      - name: Generate last-modified times for steamdb2/ first-level directories
         run: |
           set -eo pipefail
           mkdir -p output
-          echo "[" > output/steamdb2_file_times.json
+          echo "[" > output/steamdb2_dir_times.json
           first=true
           for dir in steamdb2/*; do
             if [ -d "$dir" ]; then
-              find "$dir" -maxdepth 1 -type f | while read file; do
-                timestamp=$(git log -1 --format="%cI" -- "$file")
-                if [ "$first" = true ]; then
-                  first=false
-                else
-                  echo "," >> output/steamdb2_file_times.json
-                fi
-                echo "{\"file\": \"${file}\", \"last_modified\": \"$timestamp\"}" >> output/steamdb2_file_times.json
-              done
+              # 取得該目錄最後變動的 commit
+              last_commit=$(git log -1 --format="%H" -- "$dir")
+              timestamp=$(git log -1 --format="%cI" -- "$dir")
+
+              # 判斷是否為新目錄（該 commit 是新增目錄的 commit）
+              added=$(git log --diff-filter=A --format="%H" -- "$dir")
+              if [ "$last_commit" = "$added" ]; then
+                change_type="added"
+              else
+                change_type="modified"
+              fi
+
+              # 輸出 JSON 條目
+              if [ "$first" = true ]; then
+                first=false
+              else
+                echo "," >> output/steamdb2_dir_times.json
+              fi
+              echo "{\"directory\": \"${dir}\", \"last_modified\": \"${timestamp}\", \"change_type\": \"${change_type}\"}" >> output/steamdb2_dir_times.json
             fi
           done
-          echo "]" >> output/steamdb2_file_times.json
+          echo "]" >> output/steamdb2_dir_times.json
 
       - name: Commit and push JSON
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add output/steamdb2_file_times.json
-          git diff --cached --quiet || git commit -m "Update steamdb2_file_times.json"
+          git add output/steamdb2_dir_times.json
+          git diff --cached --quiet || git commit -m "Update steamdb2_dir_times.json"
           git push
