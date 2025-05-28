@@ -32,7 +32,7 @@ jobs:
 
               # 用 git log 查這整個目錄最後的 commit timestamp
               latest_ts=$(git log -1 --format="%ct" -- "$dir")
-              iso_ts=$(date -u -d "@$latest_ts" +%Y-%m-%d %H:%M:%SZ)
+              iso_ts=$(date -u -d "@$latest_ts" +%Y-%m-%dT%H:%M:%SZ)
 
               # 判斷是 added 還是 modified
               first_commit=$(git log --diff-filter=A --format="%H" -- "$dir" | head -n 1)
