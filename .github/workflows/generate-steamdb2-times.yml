@@ -21,17 +21,23 @@ jobs:
           first=true
           for dir in steamdb2/*; do
             if [ -d "$dir" ]; then
-              # 取得該目錄最後變動的 commit
-              last_commit=$(git log -1 --format="%H" -- "$dir")
-              timestamp=$(git log -1 --format="%cI" -- "$dir")
+              # 取得目錄內所有檔案的最後修改時間（最晚的那一個）
+              files=$(find "$dir" -type f)
+              if [ -z "$files" ]; then
+                continue
+              fi
+              timestamp=$(git log -1 --format="%cI" -- $files)
 
-              # 判斷是否為新目錄（該 commit 是新增目錄的 commit）
-              added=$(git log --diff-filter=A --format="%H" -- "$dir")
-              if [ "$last_commit" = "$added" ]; then
+              # 判斷是否為新目錄（所有檔案的最早 commit 都相同）
+              first_commit=$(git log --diff-filter=A --format="%H" -- "$dir" | head -n 1)
+              last_commit=$(git log -1 --format="%H" -- $files)
+              if [ "$first_commit" = "$last_commit" ]; then
                 change_type="added"
               else
                 change_type="modified"
               fi
+
+              dir_name=$(basename "$dir")
 
               # 輸出 JSON 條目
               if [ "$first" = true ]; then
@@ -39,7 +45,7 @@ jobs:
               else
                 echo "," >> output/steamdb2_dir_times.json
               fi
-              echo "{\"directory\": \"${dir}\", \"last_modified\": \"${timestamp}\", \"change_type\": \"${change_type}\"}" >> output/steamdb2_dir_times.json
+              echo "{\"directory\": \"${dir_name}\", \"last_modified\": \"${timestamp}\", \"change_type\": \"${change_type}\"}" >> output/steamdb2_dir_times.json
             fi
           done
           echo "]" >> output/steamdb2_dir_times.json
