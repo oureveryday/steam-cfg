@@ -13,17 +13,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Generate last-modified times for steamdb2/
+      - name: Generate last-modified times for steamdb2/ first-level subdirectories
         run: |
+          set -eo pipefail
           mkdir -p output
-          find steamdb2 -maxdepth 0 -type f ! -path "./.git/*" ! -name "steamdb2_file_times.json" | while read file; do
-            timestamp=$(git log -1 --format="%cI" -- "$file")
-            echo "{\"file\": \"${file}\", \"last_modified\": \"$timestamp\"}," >> output/times.tmp
-          done
           echo "[" > output/steamdb2_file_times.json
-          sed '$ s/,$//' output/times.tmp >> output/steamdb2_file_times.json
+          first=true
+          for dir in steamdb2/*; do
+            if [ -d "$dir" ]; then
+              find "$dir" -maxdepth 1 -type f | while read file; do
+                timestamp=$(git log -1 --format="%cI" -- "$file")
+                if [ "$first" = true ]; then
+                  first=false
+                else
+                  echo "," >> output/steamdb2_file_times.json
+                fi
+                echo "{\"file\": \"${file}\", \"last_modified\": \"$timestamp\"}" >> output/steamdb2_file_times.json
+              done
+            fi
+          done
           echo "]" >> output/steamdb2_file_times.json
-          rm output/times.tmp
 
       - name: Commit and push JSON
         run: |
