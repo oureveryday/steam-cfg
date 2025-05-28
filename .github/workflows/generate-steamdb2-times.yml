@@ -19,25 +19,33 @@ jobs:
           mkdir -p output
           echo "[" > output/steamdb2_dir_times.json
           first=true
+
           for dir in steamdb2/*; do
             if [ -d "$dir" ]; then
-              # 取得目錄內所有檔案的最後修改時間（最晚的那一個）
-              files=$(find "$dir" -type f)
-              if [ -z "$files" ]; then
-                continue
-              fi
-              timestamp=$(git log -1 --format="%cI" -- $files)
-
-              # 判斷是否為新目錄（所有檔案的最早 commit 都相同）
-              first_commit=$(git log --diff-filter=A --format="%H" -- "$dir" | head -n 1)
-              last_commit=$(git log -1 --format="%H" -- $files)
-              if [ "$first_commit" = "$last_commit" ]; then
-                change_type="added"
-              else
-                change_type="modified"
-              fi
-
               dir_name=$(basename "$dir")
+
+              # 收集該目錄下所有檔案最後變動的時間，找出最晚的那個
+              latest_ts=""
+              for file in $(find "$dir" -type f); do
+                ts=$(git log -1 --format="%ct" -- "$file" || echo "")
+                if [ -n "$ts" ] && { [ -z "$latest_ts" ] || [ "$ts" -gt "$latest_ts" ]; }; then
+                  latest_ts=$ts
+                fi
+              done
+
+              # 轉為 ISO 格式（如有）
+              if [ -n "$latest_ts" ]; then
+                iso_ts=$(date -u -d "@$latest_ts" +%Y-%m-%dT%H:%M:%SZ)
+              else
+                iso_ts="null"
+              fi
+
+              # 判斷是否為新增
+              added_commit=$(git log --diff-filter=A --format="%H" -- "$dir" | head -n 1)
+              change_type="modified"
+              if [ -n "$added_commit" ]; then
+                change_type="added"
+              fi
 
               # 輸出 JSON 條目
               if [ "$first" = true ]; then
@@ -45,9 +53,11 @@ jobs:
               else
                 echo "," >> output/steamdb2_dir_times.json
               fi
-              echo "{\"directory\": \"${dir_name}\", \"last_modified\": \"${timestamp}\", \"change_type\": \"${change_type}\"}" >> output/steamdb2_dir_times.json
+
+              echo "{\"directory\": \"${dir_name}\", \"last_modified\": \"${iso_ts}\", \"change_type\": \"${change_type}\"}" >> output/steamdb2_dir_times.json
             fi
           done
+
           echo "]" >> output/steamdb2_dir_times.json
 
       - name: Commit and push JSON
