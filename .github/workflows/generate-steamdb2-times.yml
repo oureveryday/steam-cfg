@@ -16,7 +16,7 @@ jobs:
       - name: Generate last-modified times for steamdb2/
         run: |
           mkdir -p output
-          find steamdb2 -type f ! -path "./.git/*" ! -name "steamdb2_file_times.json" | while read file; do
+          find steamdb2 -maxdepth 0 -type f ! -path "./.git/*" ! -name "steamdb2_file_times.json" | while read file; do
             timestamp=$(git log -1 --format="%cI" -- "$file")
             echo "{\"file\": \"${file}\", \"last_modified\": \"$timestamp\"}," >> output/times.tmp
           done
