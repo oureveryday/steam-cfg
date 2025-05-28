@@ -19,48 +19,47 @@ jobs:
           mkdir -p output
           echo "[" > output/steamdb2_dir_times.json
           first=true
-
+          
           for dir in steamdb2/*; do
             if [ -d "$dir" ]; then
               dir_name=$(basename "$dir")
-
-              # 找出該子目錄下所有檔案的最新修改時間（commit timestamp）
-              latest_ts=0
-              for file in $(find "$dir" -type f); do
-                ts=$(git log -1 --format="%ct" -- "$file" 2>/dev/null || echo 0)
-                if [ "$ts" -gt "$latest_ts" ]; then
-                  latest_ts=$ts
-                fi
-              done
-
-              if [ "$latest_ts" -eq 0 ]; then
-                # 該目錄沒有任何被 Git 跟蹤的檔案，跳過
+          
+              # 找出這個子目錄中所有被 git 管理的檔案
+              tracked_files=$(git ls-files "$dir")
+          
+              if [ -z "$tracked_files" ]; then
+                # 該目錄下沒有任何被 git 跟蹤的檔案，跳過
                 continue
               fi
-
-              # 轉為 ISO 格式
-              iso_ts=$(date -u -d "@$latest_ts" +%Y-%m-%dT%H:%M:%SZ)
-
-              # 確認是否是新增的（第一個 commit 是否是新增）
-              first_commit=$(git log --diff-filter=A --format="%H" -- "$dir" | head -n 1)
-              last_commit=$(git log -1 --format="%H" -- "$dir" 2>/dev/null)
-              change_type="modified"
+          
+              # 找出這些檔案中最後一次 commit 的時間（最新的）
+              latest_commit_time=$(git log -1 --format="%ct" -- $tracked_files)
+          
+              # 轉為 ISO 8601 格式
+              iso_ts=$(date -u -d "@$latest_commit_time" +%Y-%m-%dT%H:%M:%SZ)
+          
+              # 判斷是否為新目錄（所有檔案的首次 commit 是否等於最後一次 commit）
+              first_commit=$(git log --diff-filter=A --format="%H" -- $tracked_files | sort | head -n 1)
+              last_commit=$(git log -1 --format="%H" -- $tracked_files)
               if [ "$first_commit" = "$last_commit" ]; then
                 change_type="added"
+              else
+                change_type="modified"
               fi
-
-              # 輸出 JSON 條目
+          
+              # 寫入 JSON 條目
               if [ "$first" = true ]; then
                 first=false
               else
                 echo "," >> output/steamdb2_dir_times.json
               fi
-
+          
               echo "{\"directory\": \"${dir_name}\", \"last_modified\": \"${iso_ts}\", \"change_type\": \"${change_type}\"}" >> output/steamdb2_dir_times.json
             fi
           done
-
+          
           echo "]" >> output/steamdb2_dir_times.json
+
 
       - name: Commit and push JSON
         run: |
