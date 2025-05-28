@@ -13,9 +13,9 @@ jobs:
       - name: Checkout repository with full history
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # <== 這行非常關鍵，允許你用 git log 查全部歷史
+          fetch-depth: 0  # 必須有這個，否則 git log 拿不到歷史
 
-      - name: Generate last-modified times for steamdb2/ first-level directories
+      - name: Generate last-modified times for steamdb2/ directories
         run: |
           mkdir -p output
           echo "[" > output/steamdb2_dir_times.json
@@ -25,26 +25,18 @@ jobs:
             if [ -d "$dir" ]; then
               dir_name=$(basename "$dir")
 
-              # 找出此目錄下的所有 git 管理的檔案
-              files=$(git ls-files "$dir")
-              if [ -z "$files" ]; then
+              # 確保目錄下有被 git 跟蹤的檔案
+              if [ -z "$(git ls-files "$dir")" ]; then
                 continue
               fi
 
-              # 對所有檔案執行 git log 取最大時間
-              latest_ts=0
-              for f in $files; do
-                ts=$(git log -1 --format="%ct" -- "$f")
-                if [ "$ts" -gt "$latest_ts" ]; then
-                  latest_ts=$ts
-                fi
-              done
+              # 用 git log 查這整個目錄最後的 commit timestamp
+              latest_ts=$(git log -1 --format="%ct" -- "$dir")
+              iso_ts=$(date -u -d "@$latest_ts" +%Y-%m-%d %H:%M:%SZ)
 
-              iso_ts=$(date -u -d "@$latest_ts" +%Y-%m-%dT%H:%M:%SZ)
-
-              # 是否為 added？
-              first_commit=$(git log --diff-filter=A --format="%H" -- $files | sort | head -n 1)
-              last_commit=$(git log -1 --format="%H" -- $files)
+              # 判斷是 added 還是 modified
+              first_commit=$(git log --diff-filter=A --format="%H" -- "$dir" | head -n 1)
+              last_commit=$(git log -1 --format="%H" -- "$dir")
               if [ "$first_commit" = "$last_commit" ]; then
                 change_type="added"
               else
