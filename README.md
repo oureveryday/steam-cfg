@@ -9,7 +9,7 @@ Installer exe for china(https://raw.githubusercontent.com/luckygametools/steam-c
 
 Link with me: LuckyGameTools@gmail.com    https://t.me/luckygametools
 
-<h1>Not Only一键自动入库steam游戏工具: LuckyGameTools （永久免费）</h1>
+<h1>Not Only一键自动入库steam游戏工具(steam unlocked): LuckyGameTools （永久免费）</h1>
 
 ##
 - 自动安装清单文件
