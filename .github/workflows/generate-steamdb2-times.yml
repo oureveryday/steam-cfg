@@ -10,6 +10,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Cleanup to free disk space
+        run: |
+          echo "Disk space before cleanup:"
+          df -h
+
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/lib/android
+          sudo apt-get clean
+          sudo docker system prune -af
+
+          echo "Disk space after cleanup:"
+          df -h
+          
       - name: Checkout repository with full history
         uses: actions/checkout@v4
         with:
