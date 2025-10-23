@@ -11,6 +11,13 @@
     },
     {
       "position": "gameTop",
+      "imgs":      ["https://images.steamusercontent.com/ugc/17650834342488690963/75C7B4B382EA23C31B06FF594DB0D47B868596D5/"],
+      "note": "hzmod",
+      "targetType": "openUrl",
+      "targetUrl": "https://hzmod.ooo?from=lgt"
+    },
+    {
+      "position": "gameTop",
       "imgs":      ["https://cdn2.steamgriddb.com/thumb/2715ec81fe7365fee8ea3b17b9403432.jpg"],
       "note": "Telegram(官方唯一群)",
       "targetType": "openUrl",
@@ -22,13 +29,6 @@
       "note": "network acceleration【AD】",
       "targetType": "openUrl",
       "targetUrl": "https://main.cute-cloud.de/register?code=iNducVv0"
-    },
-    {
-      "position": "gameTop",
-      "imgs":      ["https://images.steamusercontent.com/ugc/17650834342488690963/75C7B4B382EA23C31B06FF594DB0D47B868596D5/"],
-      "note": "hzmod",
-      "targetType": "openUrl",
-      "targetUrl": "https://hzmod.ooo?from=lgt"
     }
   ]
 }
