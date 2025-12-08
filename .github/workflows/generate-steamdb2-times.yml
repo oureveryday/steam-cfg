@@ -1,78 +1,78 @@
-name: Generate steamdb2 Directory Update Times
+# name: Generate steamdb2 Directory Update Times
 
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
+# on:
+#   push:
+#     branches: [main]
+#   workflow_dispatch:
 
-jobs:
-  generate-dir-times:
-    runs-on: ubuntu-latest
+# jobs:
+#   generate-dir-times:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Cleanup to free disk space
-        run: |
-          echo "Disk space before cleanup:"
-          df -h
+#     steps:
+#       - name: Cleanup to free disk space
+#         run: |
+#           echo "Disk space before cleanup:"
+#           df -h
 
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/lib/android
-          sudo apt-get clean
-          sudo docker system prune -af
+#           sudo rm -rf /usr/share/dotnet
+#           sudo rm -rf /opt/ghc
+#           sudo rm -rf /usr/local/lib/android
+#           sudo apt-get clean
+#           sudo docker system prune -af
 
-          echo "Disk space after cleanup:"
-          df -h
+#           echo "Disk space after cleanup:"
+#           df -h
           
-      - name: Checkout repository with full history
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # 必須有這個，否則 git log 拿不到歷史
+#       - name: Checkout repository with full history
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0  # 必須有這個，否則 git log 拿不到歷史
 
-      - name: Generate last-modified times for steamdb2/ directories
-        run: |
-          mkdir -p output
-          echo "[" > output/steamdb2_dir_times.json
-          first=true
+#       - name: Generate last-modified times for steamdb2/ directories
+#         run: |
+#           mkdir -p output
+#           echo "[" > output/steamdb2_dir_times.json
+#           first=true
 
-          for dir in steamdb2/*; do
-            if [ -d "$dir" ]; then
-              dir_name=$(basename "$dir")
+#           for dir in steamdb2/*; do
+#             if [ -d "$dir" ]; then
+#               dir_name=$(basename "$dir")
 
-              # 確保目錄下有被 git 跟蹤的檔案
-              if [ -z "$(git ls-files "$dir")" ]; then
-                continue
-              fi
+#               # 確保目錄下有被 git 跟蹤的檔案
+#               if [ -z "$(git ls-files "$dir")" ]; then
+#                 continue
+#               fi
 
-              # 用 git log 查這整個目錄最後的 commit timestamp
-              latest_ts=$(git log -1 --format="%ct" -- "$dir")
-              iso_ts=$(date -u -d "@$latest_ts" +%Y-%m-%dT%H:%M:%SZ)
+#               # 用 git log 查這整個目錄最後的 commit timestamp
+#               latest_ts=$(git log -1 --format="%ct" -- "$dir")
+#               iso_ts=$(date -u -d "@$latest_ts" +%Y-%m-%dT%H:%M:%SZ)
 
-              # 判斷是 added 還是 modified
-              first_commit=$(git log --diff-filter=A --format="%H" -- "$dir" | head -n 1)
-              last_commit=$(git log -1 --format="%H" -- "$dir")
-              if [ "$first_commit" = "$last_commit" ]; then
-                change_type="added"
-              else
-                change_type="modified"
-              fi
+#               # 判斷是 added 還是 modified
+#               first_commit=$(git log --diff-filter=A --format="%H" -- "$dir" | head -n 1)
+#               last_commit=$(git log -1 --format="%H" -- "$dir")
+#               if [ "$first_commit" = "$last_commit" ]; then
+#                 change_type="added"
+#               else
+#                 change_type="modified"
+#               fi
 
-              if [ "$first" = true ]; then
-                first=false
-              else
-                echo "," >> output/steamdb2_dir_times.json
-              fi
+#               if [ "$first" = true ]; then
+#                 first=false
+#               else
+#                 echo "," >> output/steamdb2_dir_times.json
+#               fi
 
-              echo "{\"directory\": \"${dir_name}\", \"last_modified\": \"${iso_ts}\", \"change_type\": \"${change_type}\"}" >> output/steamdb2_dir_times.json
-            fi
-          done
+#               echo "{\"directory\": \"${dir_name}\", \"last_modified\": \"${iso_ts}\", \"change_type\": \"${change_type}\"}" >> output/steamdb2_dir_times.json
+#             fi
+#           done
 
-          echo "]" >> output/steamdb2_dir_times.json
+#           echo "]" >> output/steamdb2_dir_times.json
 
-      - name: Commit and push JSON
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add output/steamdb2_dir_times.json
-          git diff --cached --quiet || git commit -m "Update steamdb2_dir_times.json"
-          git push
+#       - name: Commit and push JSON
+#         run: |
+#           git config user.name "github-actions[bot]"
+#           git config user.email "github-actions[bot]@users.noreply.github.com"
+#           git add output/steamdb2_dir_times.json
+#           git diff --cached --quiet || git commit -m "Update steamdb2_dir_times.json"
+#           git push
